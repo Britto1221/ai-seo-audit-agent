@@ -45,6 +45,9 @@ def parse(fetch_result: dict) -> PageData:
     robots_tag  = soup.find("meta", attrs={"name": lambda n: n and n.lower() == "robots"})
     robots_meta = robots_tag["content"].strip() if robots_tag and robots_tag.get("content") else None
 
+    viewport_tag = soup.find("meta", attrs={"name": lambda n: n and n.lower() == "viewport"})
+    viewport = viewport_tag["content"].strip() if viewport_tag and viewport_tag.get("content") else None
+
     # ── Canonical ─────────────────────────────────────────────────────────────
     canonical_tag = soup.find("link", attrs={"rel": lambda r: r and "canonical" in r})
     canonical     = canonical_tag["href"].strip() if canonical_tag and canonical_tag.get("href") else None
@@ -109,6 +112,7 @@ def parse(fetch_result: dict) -> PageData:
 
     return PageData(
         url=url,
+        final_url=final_url,
         status_code=status_code,
         response_time_ms=response_time_ms,
         title=title,

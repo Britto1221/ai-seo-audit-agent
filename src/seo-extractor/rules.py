@@ -37,25 +37,57 @@ def _check_title(page: PageData) -> list[SEOIssue]:
 
     return issues
 
+def _check_duplicate_meta_descriptions(pages: list[PageData]) -> list[SEOIssue]:
+    issues = []
+    seen = {}
+
+    for page in pages:
+        if not page.meta_description:
+            continue
+
+        meta_lower = page.meta_description.strip().lower()
+
+        if meta_lower in seen:
+            issues.append(SEOIssue(
+                page_url=page.url,
+                issue_type=IssueType.DUPLICATE_META,
+                severity=Severity.WARNING,
+                current_value=page.meta_description,
+                suggestion=f"This meta description duplicates '{seen[meta_lower]}'. Each page should have a unique meta description.",
+            ))
+        else:
+            seen[meta_lower] = page.url
+
+    return issues
 
 def _check_meta(page: PageData) -> list[SEOIssue]:
     issues = []
 
     if not page.meta_description:
         issues.append(SEOIssue(
-            page_url      = page.url,
-            issue_type    = IssueType.MISSING_META,
-            severity      = Severity.WARNING,
-            current_value = "",
-            suggestion    = "Add a meta description under 160 characters summarising the page.",
+            page_url=page.url,
+            issue_type=IssueType.MISSING_META,
+            severity=Severity.WARNING,
+            current_value="",
+            suggestion="Add a meta description between 50–160 characters summarising the page.",
         ))
+
+    elif page.meta_description_length < META_MIN:
+        issues.append(SEOIssue(
+            page_url=page.url,
+            issue_type=IssueType.META_TOO_SHORT,
+            severity=Severity.WARNING,
+            current_value=page.meta_description,
+            suggestion=f"Meta description is only {page.meta_description_length} chars. Expand to at least {META_MIN}.",
+        ))
+
     elif page.meta_description_length > META_MAX:
         issues.append(SEOIssue(
-            page_url      = page.url,
-            issue_type    = IssueType.META_TOO_LONG,
-            severity      = Severity.WARNING,
-            current_value = page.meta_description,
-            suggestion    = f"Meta description is {page.meta_description_length} chars. Trim to under {META_MAX}.",
+            page_url=page.url,
+            issue_type=IssueType.META_TOO_LONG,
+            severity=Severity.WARNING,
+            current_value=page.meta_description,
+            suggestion=f"Meta description is {page.meta_description_length} chars. Trim to under {META_MAX}.",
         ))
 
     return issues
@@ -83,6 +115,19 @@ def _check_headings(page: PageData) -> list[SEOIssue]:
 
     return issues
 
+def _check_status_code(page: PageData) -> list[SEOIssue]:
+    issues = []
+
+    if page.status_code >= 400 or page.status_code == 0:
+        issues.append(SEOIssue(
+            page_url=page.url,
+            issue_type=IssueType.BROKEN_LINK,
+            severity=Severity.CRITICAL,
+            current_value=str(page.status_code),
+            suggestion="Fix this page because it does not return a successful HTTP 200 response.",
+        ))
+
+    return issues
 
 def _check_content(page: PageData) -> list[SEOIssue]:
     issues = []
@@ -182,15 +227,30 @@ def _check_duplicate_titles(pages: list[PageData]) -> list[SEOIssue]:
 
     return issues
 
+def _check_viewport(page: PageData) -> list[SEOIssue]:
+    issues = []
+
+    if not page.viewport and page.status_code == 200:
+        issues.append(SEOIssue(
+            page_url=page.url,
+            issue_type=IssueType.MISSING_VIEWPORT,
+            severity=Severity.WARNING,
+            current_value="",
+            suggestion="Add a viewport meta tag for mobile responsiveness.",
+        ))
+
+    return issues
 
 def detect_issues(pages: list[PageData]) -> list[SEOIssue]:
-    """
-    Run all rules across all pages.
-    Returns flat list of SEOIssue objects.
-    """
     all_issues = []
 
     for page in pages:
+        all_issues.extend(_check_status_code(page))
+
+        # skip SEO checks if page failed
+        if page.status_code != 200:
+            continue
+
         all_issues.extend(_check_title(page))
         all_issues.extend(_check_meta(page))
         all_issues.extend(_check_headings(page))
@@ -199,8 +259,9 @@ def detect_issues(pages: list[PageData]) -> list[SEOIssue]:
         all_issues.extend(_check_canonical(page))
         all_issues.extend(_check_internal_linking(page))
         all_issues.extend(_check_schema(page))
-
-    # Site-level checks
-    all_issues.extend(_check_duplicate_titles(pages))
+        all_issues.extend(_check_duplicate_titles(pages))
+        all_issues.extend(_check_duplicate_meta_descriptions(pages))
+        all_issues.extend(_check_duplicate_titles(pages))
+        all_issues.extend(_check_viewport(page))
 
     return all_issues

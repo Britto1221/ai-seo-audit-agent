@@ -59,5 +59,4 @@ class SEOExtract:
 
 if __name__ == "__main__":
     result = SEOExtract.audit("https://books.toscrape.com")
-    for i in result:
-        print(i)
+    print(result.model_dump_json(indent=2))

@@ -14,6 +14,8 @@ class Severity(str, Enum):
 # ── Issue Types ───────────────────────────────────────────────────────────────
 
 class IssueType(str, Enum):
+    MISSING_VIEWPORT = "Missing Viewport Meta Tag"
+    META_TOO_SHORT = "Meta Description Too Short"
     MISSING_TITLE         = "Missing Title"
     TITLE_TOO_SHORT       = "Title Too Short"
     TITLE_TOO_LONG        = "Title Too Long"
@@ -29,6 +31,7 @@ class IssueType(str, Enum):
     POOR_INTERNAL_LINKING = "Poor Internal Linking"
     NO_SCHEMA             = "No Schema Markup"
     MISSING_ROBOTS_META   = "Missing Robots Meta Tag"
+    DUPLICATE_META = "Duplicate Meta Description"
 
 
 # ── Single SEO Issue ──────────────────────────────────────────────────────────
@@ -90,6 +93,10 @@ class PageData(BaseModel):
 
     # Scoring
     page_score : float = 0.0
+
+    final_url: Optional[str] = None
+
+    viewport: Optional[str] = None
 
 class AuditResult(BaseModel):
     url           : str
