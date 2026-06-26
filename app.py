@@ -8,28 +8,73 @@ st.set_page_config(page_title="AI SEO Audit Agent", page_icon="🖥️", layout=
 
 st.markdown("""
 <style>
+/* Full app */
 .stApp {
-    background-color: #0d1117;
+    background-color: #010409;
     color: #c9d1d9;
+    font-family: Consolas, monospace;
 }
-.terminal-box {
+
+/* Main container */
+.block-container {
+    background-color: #010409;
+    padding-top: 2rem;
+}
+
+/* Text */
+h1, h2, h3, h4, h5, h6, p, label, span, div {
+    color: #c9d1d9 !important;
+    font-family: Consolas, monospace !important;
+}
+
+/* Input boxes */
+.stTextInput input {
+    background-color: #010409 !important;
+    color: #58a6ff !important;
+    border: 1px solid #30363d !important;
+    border-radius: 8px !important;
+    font-family: Consolas, monospace !important;
+}
+
+/* Buttons */
+.stButton button {
+    background-color: #010409 !important;
+    color: #c9d1d9 !important;
+    border: 1px solid #30363d !important;
+    border-radius: 8px !important;
+    font-family: Consolas, monospace !important;
+}
+
+.stButton button:hover {
+    border-color: #238636 !important;
+    color: #58a6ff !important;
+}
+
+/* Terminal cards */
+.terminal-output, .terminal-box {
     background-color: #010409;
     border: 1px solid #30363d;
+    border-left: 3px solid #238636;
     border-radius: 8px;
     padding: 18px;
-    font-family: Consolas, monospace;
-    color: #58a6ff;
-}
-.terminal-output {
-    background-color: #010409;
-    border-left: 3px solid #238636;
-    padding: 15px;
     font-family: Consolas, monospace;
     color: #c9d1d9;
     white-space: pre-wrap;
 }
-h1, h2, h3 {
-    color: #58a6ff;
+
+/* Expander */
+.streamlit-expanderHeader {
+    background-color: #010409 !important;
+    color: #58a6ff !important;
+    border: 1px solid #30363d !important;
+}
+
+/* JSON box */
+pre {
+    background-color: #010409 !important;
+    color: #c9d1d9 !important;
+    border: 1px solid #30363d !important;
+    border-radius: 8px !important;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -88,7 +133,7 @@ safe_browsing   : {audit_result.safe_browsing.is_safe}
             target_keyword=target_keyword,
         )
 
-        st.markdown(f'<div class="terminal-output">{recommendations}</div>', unsafe_allow_html=True)
+        st.code(recommendations, language="markdown")
 
         with st.expander("$ show raw_json"):
             st.json(audit_result.model_dump())

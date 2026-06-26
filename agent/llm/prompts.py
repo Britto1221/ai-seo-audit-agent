@@ -38,4 +38,7 @@ Rules:
 - Keep title suggestions around 50–60 characters.
 - Keep meta descriptions around 120–160 characters.
 - Make suggestions practical and beginner-friendly.
+- Do not use excessive blank lines.
+- Keep formatting clean and compact.
+- Use markdown headings and bullet points only.
 """
