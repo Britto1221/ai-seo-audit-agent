@@ -1,8 +1,9 @@
-venv/
+cat > .gitignore << 'EOF'
 .venv/
+.env
 __pycache__/
 *.pyc
-.env
-audits/
-data/cache/
-data/temp/
+*.egg-info/
+dist/
+build/
+EOF

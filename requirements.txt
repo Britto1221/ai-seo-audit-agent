@@ -1,0 +1,11 @@
+cat > requirements.txt << 'EOF'
+seoextract
+streamlit
+pydantic
+python-dotenv
+openai
+langgraph
+pandas
+openpyxl
+reportlab
+EOF
