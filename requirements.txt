@@ -1,10 +1,10 @@
 seoextract
-streamlit
-pydantic
-python-dotenv
 openai
-langgraph
-pandas
-openpyxl
+python-dotenv
+pydantic
+streamlit
+rich
 reportlab
-EOF
+python-docx
+deepagents
+langchain-openai
